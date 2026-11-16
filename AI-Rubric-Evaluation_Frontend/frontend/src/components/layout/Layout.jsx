@@ -35,7 +35,7 @@ const pageDetails = {
   },
 };
 
-export default function Layout() {
+export default function Layout({ user, onLogout }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
@@ -47,14 +47,17 @@ export default function Layout() {
   return (
     <div className="app-layout">
       <Sidebar
-        isOpen={sidebarOpen}
-        onNavigate={() => setSidebarOpen(false)}
+          isOpen={sidebarOpen}
+  onNavigate={() => setSidebarOpen(false)}
+  user={user}
       />
 
       <div className="app-main">
         <Header
           title={currentPage.title}
           subtitle={currentPage.subtitle}
+          user={user}
+          onLogout={onLogout}
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}
         />
 

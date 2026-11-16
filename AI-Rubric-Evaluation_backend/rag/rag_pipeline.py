@@ -1,12 +1,17 @@
 
+from pathlib import Path
+from functools import lru_cache
+
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
 
-# Local FAISS database location
-FAISS_INDEX_PATH = "faiss_index"
+# Resolve the FAISS index relative to the backend directory.
+BACKEND_DIR = Path(__file__).resolve().parent.parent
+FAISS_INDEX_PATH = BACKEND_DIR / "faiss_index"
 
 
+@lru_cache(maxsize=1)
 def load_vector_database():
 
     print("Loading embedding model...")
@@ -19,11 +24,18 @@ def load_vector_database():
 
     print("Loading FAISS vector database...")
 
+    if not FAISS_INDEX_PATH.exists():
+        raise FileNotFoundError(
+            f"FAISS index directory not found: {FAISS_INDEX_PATH}"
+        )
+
     vector_database = FAISS.load_local(
-        FAISS_INDEX_PATH,
+        str(FAISS_INDEX_PATH),
         embeddings,
         allow_dangerous_deserialization=True
     )
+
+    print("FAISS vector database loaded successfully!")
 
     return vector_database
 
@@ -51,22 +63,3 @@ def retrieve_relevant_context(query: str, k: int = 3):
         })
 
     return retrieved_context
-
-
-if __name__ == "__main__":
-
-    test_query = "How can restaurants prevent food contamination?"
-
-    results = retrieve_relevant_context(test_query)
-
-    print("\nSEARCH QUERY:")
-    print(test_query)
-
-    print("\nRETRIEVED KNOWLEDGE:")
-
-    for index, result in enumerate(results, start=1):
-
-        print(f"\nResult {index}")
-        print("Chapter:", result["metadata"]["chapter"])
-        print("Distance:", round(result["distance"], 4))
-        print("Content:", result["content"])

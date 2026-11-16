@@ -2,15 +2,57 @@
 import { NavLink } from "react-router-dom";
 
 const navigationItems = [
-  { path: "/", label: "Overview", icon: "..." },
-  { path: "/evaluation", label: "New Evaluation", icon: "..." },
-  { path: "/assessment", label: "Assessment Portal", icon: "clipboard-list" },
-  { path: "/history", label: "Evaluation History", icon: "..." },
-  { path: "/rubrics", label: "Rubric Management", icon: "..." },
-  { path: "/analytics", label: "Analytics", icon: "..." },
-  { path: "/review-queue", label: "Review Queue", icon: "..." },
+  {
+    path: "/",
+    label: "Overview",
+    icon: "◫",
+    roles: ["student", "admin", "reviewer"],
+  },
+  {
+    path: "/evaluation",
+    label: "New Evaluation",
+    icon: "✎",
+    roles: ["admin", "reviewer"],
+  },
+  {
+    path: "/assessment",
+    label: "Assessment Portal",
+    icon: "▤",
+    roles: ["student"],
+  },
+  {
+    path: "/history",
+    label: "Evaluation History",
+    icon: "◷",
+    roles: ["student", "reviewer"],
+  },
+  {
+    path: "/rubrics",
+    label: "Rubric Management",
+    icon: "▦",
+    roles: ["admin"],
+  },
+  {
+    path: "/analytics",
+    label: "Analytics",
+    icon: "▥",
+    roles: ["admin"],
+  },
+  {
+    path: "/review-queue",
+    label: "Review Queue",
+    icon: "☷",
+    roles: ["admin", "reviewer"],
+  },
 ];
-function Sidebar({ isOpen = true, onNavigate }) {
+
+function Sidebar({ isOpen = false, onNavigate, user }) {
+  const role = user?.role?.toLowerCase() || "student";
+
+  const visibleItems = navigationItems.filter((item) =>
+    item.roles.includes(role)
+  );
+
   return (
     <>
       {isOpen && (
@@ -33,7 +75,7 @@ function Sidebar({ isOpen = true, onNavigate }) {
         <div className="sidebar-section-label">WORKSPACE</div>
 
         <nav className="sidebar-navigation" aria-label="Main navigation">
-          {navigationItems.map((item) => (
+          {visibleItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}

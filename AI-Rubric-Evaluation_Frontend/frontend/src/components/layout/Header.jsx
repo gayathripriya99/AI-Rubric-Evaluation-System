@@ -3,7 +3,23 @@ function Header({
   title = "Overview",
   subtitle = "Welcome to your assessment workspace.",
   onMenuClick,
+  user,
+  onLogout,
 }) {
+  const fullName = user?.full_name || "User";
+  const role = user?.role || "student";
+
+  const initials = fullName
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const formattedRole =
+    role.charAt(0).toUpperCase() + role.slice(1);
+
   return (
     <header className="app-header">
       <div className="header-left">
@@ -33,12 +49,21 @@ function Header({
         </div>
 
         <div className="header-profile">
-          <div className="profile-avatar">T</div>
+          <div className="profile-avatar">{initials}</div>
+
           <div className="profile-details">
-            <strong>Teacher</strong>
-            <span>Administrator</span>
+            <strong>{fullName}</strong>
+            <span>{formattedRole}</span>
           </div>
         </div>
+
+        <button
+          type="button"
+          className="logout-button"
+          onClick={onLogout}
+        >
+          Logout
+        </button>
       </div>
     </header>
   );
